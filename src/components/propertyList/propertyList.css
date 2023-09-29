@@ -1,0 +1,34 @@
+.pList {
+  margin-bottom: 100px;
+  position: relative;
+  width: 100%;
+  max-width: 1280px;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.App {
+  margin-bottom: 100px;
+  position: relative;
+  width: 1280px;
+}
+
+.pListItem {
+  display: inline-block;
+  width: 240px;
+  height: 240px;
+  cursor: pointer;
+}
+
+.pListImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.pListTitles {
+  position: relative;
+  font-size: 8px;
+  color: black;
+}
