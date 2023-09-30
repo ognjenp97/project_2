@@ -1,16 +1,9 @@
 .pList {
-  margin-bottom: 100px;
   position: relative;
   width: 100%;
   max-width: 1280px;
   justify-content: space-between;
   gap: 20px;
-}
-
-.App {
-  margin-bottom: 100px;
-  position: relative;
-  width: 1280px;
 }
 
 .pListItem {
