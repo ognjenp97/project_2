@@ -31,3 +31,12 @@
   border-radius: 5px;
   cursor: pointer;
 }
+
+.mailTitle {
+  font-size: 30px;
+  margin-top: 40px;
+}
+
+.mailDesc {
+  font-size: 15px;
+}
