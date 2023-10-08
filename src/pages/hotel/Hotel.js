@@ -3,10 +3,23 @@ import Header from "../../components/header/Header";
 import Navbar from "../../components/navbar/Navbar";
 import MailList from "../../components/mailList/MailList";
 import Footer from "../../components/footer/Footer";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleArrowLeft,
+  faCircleArrowRight,
+  faCircleXmark,
+  faLocationDot,
+} from "@fortawesome/free-solid-svg-icons";
 
 const Hotel = () => {
+  const [slideNumber, setSlideNumber] = useState(0);
+  const [open, setOpen] = useState(false);
+  const handleOpen = (i) => {
+    setSlideNumber(i);
+    setOpen(true);
+  };
+
   const photos = [
     {
       src: "https://image-tc.galaxy.tf/wijpeg-4s33alr5zccihirylc1pfy74e/falkensteiner-hotel-belgrade-exterior-4.jpg",
@@ -27,8 +40,43 @@ const Hotel = () => {
       src: "https://feelserbia.com/wp-content/uploads/2019/03/4-7.jpg",
     },
   ];
+
+  const handleMove = (direction) => {
+    let newSlideNumber;
+
+    if (direction === "l") {
+      newSlideNumber = slideNumber === 0 ? 5 : slideNumber - 1;
+    } else {
+      newSlideNumber = slideNumber === 5 ? 0 : slideNumber + 1;
+    }
+
+    setSlideNumber(newSlideNumber);
+  };
+
   return (
     <div>
+      {open && (
+        <div className="slider">
+          <FontAwesomeIcon
+            icon={faCircleXmark}
+            className="close"
+            onClick={() => setOpen(false)}
+          />
+          <FontAwesomeIcon
+            icon={faCircleArrowLeft}
+            className="arrow"
+            onClick={() => handleMove("l")}
+          />
+          <div className="sliderWrapper">
+            <img src={photos[slideNumber].src} className="sliderImg" />
+          </div>
+          <FontAwesomeIcon
+            icon={faCircleArrowRight}
+            className="arrow"
+            onClick={() => handleMove("r")}
+          />
+        </div>
+      )}
       <Navbar />
       <Header type="list" />
       <div className="hotelContainer">
@@ -43,9 +91,13 @@ const Hotel = () => {
             Excellent location - 5km from center
           </span>
           <div className="hotelImages">
-            {photos.map((photo) => (
+            {photos.map((photo, i) => (
               <div className="hotelImgWrapper">
-                <img src={photo.src} className="hotelImg" />
+                <img
+                  onClick={() => handleOpen(i)}
+                  src={photo.src}
+                  className="hotelImg"
+                />
               </div>
             ))}
           </div>
