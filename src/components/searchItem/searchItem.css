@@ -28,9 +28,14 @@
 
 .siDistance {
   font-size: 12px;
+  margin-top: -15px;
 }
 
-.siSubtitle,
+.siSubtitle {
+  font-size: 12px;
+  font-weight: bold;
+}
+
 .siFeatures {
   font-size: 12px;
 }
