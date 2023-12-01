@@ -25,3 +25,7 @@
   font-size: 8px;
   color: black;
 }
+
+.pListTitles > h2 {
+  color: rgb(120, 120, 120);
+}

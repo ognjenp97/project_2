@@ -1,49 +1,35 @@
 import "./featuredBooking.css";
-import hotelbg from "../image/falkensteiner-hotel-belgrade.jpg";
+import useFetch from "../../hooks/useFetch";
 
 const FeaturedBooking = () => {
+  const { data, loading, error } = useFetch("/hotels?featured=true");
+  const random = Math.ceil(Math.random() * (data.length - 3));
+  const slicedNumbers = data.slice(random - 1, random + 3);
+
   return (
     <div className="fb">
-      <div className="fbItem">
-        <img src={hotelbg} className="fbImg" />
-        <span className="fbName">Falkensteiner Hotel</span>
-        <span className="fbCity">Belgrade</span>
-        <span className="fbPrice">Starting from $120</span>
-        <div className="fbRating">
-          <button>8.9</button>
-          <span>Excellent</span>
-        </div>
-      </div>
-      <div className="fbItem">
-        <img src={hotelbg} className="fbImg" />
-        <span className="fbName">Falkensteiner Hotel</span>
-        <span className="fbCity">Belgrade</span>
-        <span className="fbPrice">Starting from $120</span>
-        <div className="fbRating">
-          <button>8.9</button>
-          <span>Excellent</span>
-        </div>
-      </div>
-      <div className="fbItem">
-        <img src={hotelbg} className="fbImg" />
-        <span className="fbName">Falkensteiner Hotel</span>
-        <span className="fbCity">Belgrade</span>
-        <span className="fbPrice">Starting from $120</span>
-        <div className="fbRating">
-          <button>8.9</button>
-          <span>Excellent</span>
-        </div>
-      </div>
-      <div className="fbItem">
-        <img src={hotelbg} className="fbImg" />
-        <span className="fbName">Falkensteiner Hotel</span>
-        <span className="fbCity">Belgrade</span>
-        <span className="fbPrice">Starting from $120</span>
-        <div className="fbRating">
-          <button>8.9</button>
-          <span>Excellent</span>
-        </div>
-      </div>
+      {loading ? (
+        "Loading..."
+      ) : (
+        <>
+          {slicedNumbers.map((item) => (
+            <div className="fbItem" key={item._id}>
+              <img src={item.photos[0]} alt="" className="fbImg" />
+              <span className="fbName">{item.name}</span>
+              <span className="fbCity">{item.city}</span>
+              <span className="fbPrice">
+                Starting from ${item.cheapestPrice}
+              </span>
+              {item.rating && (
+                <div className="fbRating">
+                  <button>{item.rating}</button>
+                  <span>Excellent</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </>
+      )}
     </div>
   );
 };
