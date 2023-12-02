@@ -3,7 +3,7 @@ import Header from "../../components/header/Header";
 import Navbar from "../../components/navbar/Navbar";
 import MailList from "../../components/mailList/MailList";
 import Footer from "../../components/footer/Footer";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleArrowLeft,
@@ -11,8 +11,13 @@ import {
   faCircleXmark,
   faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
+import useFetch from "../../hooks/useFetch";
+import { useLocation } from "react-router-dom";
+import { SearchContext } from "../../context/SearchContext";
 
 const Hotel = () => {
+  const location = useLocation();
+  const id = location.pathname.split("/")[2];
   const [slideNumber, setSlideNumber] = useState(0);
   const [open, setOpen] = useState(false);
   const handleOpen = (i) => {
@@ -20,26 +25,18 @@ const Hotel = () => {
     setOpen(true);
   };
 
-  const photos = [
-    {
-      src: "https://image-tc.galaxy.tf/wijpeg-4s33alr5zccihirylc1pfy74e/falkensteiner-hotel-belgrade-exterior-4.jpg",
-    },
-    {
-      src: "https://feelserbia.com/wp-content/uploads/2019/03/5-7.jpg",
-    },
-    {
-      src: "https://feelserbia.com/wp-content/uploads/2019/03/4-7.jpg",
-    },
-    {
-      src: "https://image-tc.galaxy.tf/wijpeg-4s33alr5zccihirylc1pfy74e/falkensteiner-hotel-belgrade-exterior-4.jpg",
-    },
-    {
-      src: "https://feelserbia.com/wp-content/uploads/2019/03/5-7.jpg",
-    },
-    {
-      src: "https://feelserbia.com/wp-content/uploads/2019/03/4-7.jpg",
-    },
-  ];
+  const { data, loading, error } = useFetch(`/hotels/find/${id}`);
+
+  const { dates, options } = useContext(SearchContext);
+
+  const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+  function dayDifference(date1, date2) {
+    const timeDiff = Math.abs(date2.getTime() - date1.getTime());
+    const diffDays = Math.ceil(timeDiff / MILLISECONDS_PER_DAY);
+    return diffDays;
+  }
+
+  const days = dayDifference(dates[0].endDate, dates[0].startDate);
 
   const handleMove = (direction) => {
     let newSlideNumber;
@@ -68,7 +65,7 @@ const Hotel = () => {
             onClick={() => handleMove("l")}
           />
           <div className="sliderWrapper">
-            <img src={photos[slideNumber].src} className="sliderImg" />
+            <img src={data.photos[slideNumber]} className="sliderImg" />
           </div>
           <FontAwesomeIcon
             icon={faCircleArrowRight}
@@ -79,67 +76,59 @@ const Hotel = () => {
       )}
       <Navbar />
       <Header type="list" />
-      <div className="hotelContainer">
-        <div className="hotelWrapper">
-          <button className="bookNow">Reserve or Book Now</button>
-          <h1 className="hotelTitle">Falkensteiner Hotel</h1>
-          <div className="hotelAddress">
-            <FontAwesomeIcon icon={faLocationDot} />
-            <span>Bulevar Mihaila Pupina 10K Novi Beograd</span>
-          </div>
-          <span className="hotelDistance">
-            Excellent location - 5km from center
-          </span>
-          <div className="hotelImages">
-            {photos.map((photo, i) => (
-              <div className="hotelImgWrapper">
-                <img
-                  onClick={() => handleOpen(i)}
-                  src={photo.src}
-                  className="hotelImg"
-                />
-              </div>
-            ))}
-          </div>
-          <div className="hotelDetails">
-            <div className="hotelDetailsTexts">
-              <p>
-                Falkensteiner Hotel Belgrade features free WiFi and an elegant
-                restaurant in the city's vibrant district, near the business
-                centre of Belgrade. Danube Promenade with numerous night clubs
-                is within 800 metres, Belgrade Arena is 1.5 km away. The
-                stylishly decorated rooms all have an LCD TV on the wall and a
-                seating area. The bathroom features a contemporary design.
-                Panoramic views of the historic part of Belgrade are provided
-                from the Executive Lounge. The spa centre offers relaxation
-                opportunities in its modern spa centre with a fitness area.
-                Belgrade city centre is approximately 5 km away. It can be
-                reached with frequent and direct bus lines departing from a
-                nearby bus stop. Popular sights like the Kalemegdan Fortress,
-                Knez Mihailova Street and the bohemian Skadarlija District, can
-                be visited in the centre. Nikola Tesla International Airport is
-                at a distance of 15 km. It is located on the hotel's side of the
-                city, which allows for easier access to the airport. Front desk
-                offers shuttle service at an extra charge and upon request.
-                Parking in the hotel's garage is available at a surcharge.
-              </p>
-            </div>
-            <div className="hotelDetailsPrice">
-              <h1>Perfect for a stay!</h1>
+      {loading ? (
+        "loading"
+      ) : (
+        <div className="hotelContainer">
+          <div className="hotelWrapper">
+            <button className="bookNow">Reserve or Book Now</button>
+            <h1 className="hotelTitle">{data.name}</h1>
+            <div className="hotelAddress">
+              <FontAwesomeIcon icon={faLocationDot} />
               <span>
-                Located in the real heart od Belgrade, this property has an
-                excellent location score of 9.2!
+                {data.address} {data.city}
               </span>
-              <h2>
-                <b>€215</b>
-              </h2>
-              <button>Reserve or Book Now!</button>
+            </div>
+            <span className="hotelDistance">
+              Excellent location - {data.distance}m from center
+            </span>
+            <span className="hotelPriceHighlight">
+              Book a stay over ${data.cheapestPrice} at this property
+            </span>
+            <div className="hotelImages">
+              {data.photos?.map((photo, i) => (
+                <div className="hotelImgWrapper" key={i}>
+                  <img
+                    onClick={() => handleOpen(i)}
+                    src={photo}
+                    className="hotelImg"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="hotelDetails">
+              <div className="hotelDetailsTexts">
+                <h1 className="homeTitle">{data.title}</h1>
+                <p>{data.desc}</p>
+              </div>
+              <div className="hotelDetailsPrice">
+                <h1>Perfect for a {days}-night stay!</h1>
+                <span>
+                  Located in the real heart of {data.city}, this property has an
+                  excellent location score of 9.2!
+                </span>
+                <h2>
+                  <b>${days * data.cheapestPrice * options.room}</b> ({days}{" "}
+                  nights)
+                </h2>
+                <button>Reserve or Book Now!</button>
+              </div>
             </div>
           </div>
+          <MailList />
+          <Footer />
         </div>
-        <MailList />
-        <Footer />
-      </div>
+      )}
     </div>
   );
 };
