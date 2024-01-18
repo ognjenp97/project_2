@@ -2,27 +2,45 @@ import "./list.css";
 import Navbar from "../../components/navbar/Navbar";
 import Header from "../../components/header/Header";
 import { useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { format } from "date-fns";
 import { DateRange } from "react-date-range";
 import SearchItem from "../../components/searchItem/SearchItem";
 import useFetch from "../../hooks/useFetch";
+import { useNavigate } from "react-router-dom";
+import { SearchContext } from "../../context/SearchContext";
 
 const List = () => {
   const location = useLocation();
   const [destination, setDestination] = useState(location.state.destination);
+  const [inputValue, setInputValue] = useState("");
   const [dates, setDates] = useState(location.state.dates);
   const [openDate, setOpenDate] = useState(false);
-  const [options, setOptions] = useState(location.state.options);
+  const [options] = useState(location.state.options);
   const [min, setMin] = useState(undefined);
   const [max, setMax] = useState(undefined);
+  const { dispatch } = useContext(SearchContext);
+  const navigate = useNavigate();
 
-  const { data, loading, error, reFetch } = useFetch(
-    `/hotels?city=${destination}&min=${min || 0}&max=${max || 999}`
+  const { data, loading, reFetch } = useFetch(
+    `/hotels?city=${destination}&min=${min || 0}&max=${max || 9999}`
+  );
+
+  const { data: otherData, loading: otherLoading } = useFetch(
+    `/hotels?type=${destination}&min=${min || 0}&max=${max || 9999}`
   );
 
   const handleClick = () => {
-    reFetch();
+    const newValue = inputValue === "" ? destination : inputValue;
+    setDestination(newValue);
+    if (newValue === destination) {
+      reFetch();
+    }
+    dispatch({
+      type: "NEW_SEARCH",
+      payload: { destination, dates, options },
+    });
+    navigate("/hotels", { state: { destination, dates, options } });
   };
 
   return (
@@ -35,14 +53,19 @@ const List = () => {
             <h1 className="lsTitle">Search</h1>
             <div className="lsItem">
               <label>Destination</label>
-              <input placeholder={destination} type="text" />
+              <input
+                placeholder={destination}
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+              />
             </div>
             <div className="lsItem">
               <label>Check-in Date</label>
               <span onClick={() => setOpenDate(!openDate)}>{`${format(
                 dates[0].startDate,
-                "MM/dd/yyyy"
-              )} to ${format(dates[0].endDate, "MM/dd/yyyy")}`}</span>
+                "dd/MM/yyyy"
+              )} to ${format(dates[0].endDate, "dd/MM/yyyy")}`}</span>
               {openDate && (
                 <DateRange
                   onChange={(item) => setDates([item.selection])}
@@ -106,13 +129,24 @@ const List = () => {
             <button onClick={handleClick}>Search</button>
           </div>
           <div className="listResult">
-            {loading ? (
-              "loading"
+            {loading || otherLoading ? (
+              "Loading please wait"
             ) : (
               <>
-                {data.map((item) => (
-                  <SearchItem item={item} key={item._id} />
-                ))}
+                {destination === "hotel" ||
+                destination === "villa" ||
+                destination === "apartment" ||
+                destination === "cottage" ||
+                destination === "house" ||
+                destination === "motel" ||
+                destination === "business space" ||
+                destination === "garage"
+                  ? otherData.map((item) => (
+                      <SearchItem item={item} key={item._id} />
+                    ))
+                  : data.map((item) => (
+                      <SearchItem item={item} key={item._id} />
+                    ))}
               </>
             )}
           </div>
