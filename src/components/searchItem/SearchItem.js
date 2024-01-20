@@ -1,13 +1,27 @@
 import "./searchItem.css";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SearchItem = ({ item }) => {
+  const navigate = useNavigate();
+
+  const handleClick = (ClickId) => {
+    navigate(`/hotels/${ClickId}`);
+  };
   return (
     <div className="searchItem">
-      <img src={item.photos[0]} className="siImg" />
+      <img
+        src={item.photos[0]}
+        className="siImg"
+        onClick={() => handleClick(item._id)}
+      />
       <div className="siDesc">
-        <h1 className="siTitle">{item.name}</h1>
-        <span className="siDistance">{item.distance}m from center</span>
+        <h1 className="siTitle" onClick={() => handleClick(item._id)}>
+          {item.name}
+        </h1>
+        <span className="siDistance">
+          <span className="siCity">{item.city}</span> - {item.distance}m from
+          center
+        </span>
         <span className="siSubtitle">{item.title}</span>
         <span className="siFeatures">{item.desc}</span>
         <span className="siCancelOp">Free cancellation</span>
@@ -24,9 +38,12 @@ const SearchItem = ({ item }) => {
         )}
         <div className="siDetailTexts">
           <span className="siPrice">${item.cheapestPrice}</span>
-          <Link to={`/hotels/${item._id}`}>
-            <button className="siCheckButton">See availability</button>
-          </Link>
+          <button
+            className="siCheckButton"
+            onClick={() => handleClick(item._id)}
+          >
+            See availability
+          </button>
         </div>
       </div>
     </div>

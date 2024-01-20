@@ -19,10 +19,12 @@
   object-fit: cover;
   max-width: 350px;
   max-height: 350px;
+  cursor: pointer;
 }
 
 .fbName {
   font-weight: bold;
+  cursor: pointer;
 }
 
 .fbCity {
