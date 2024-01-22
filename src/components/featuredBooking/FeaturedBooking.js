@@ -54,7 +54,7 @@ const FeaturedBooking = () => {
               <span className="fbName">{item.name}</span>
               <span className="fbCity">{item.city}</span>
               <span className="fbPrice">
-                Starting from ${item.cheapestPrice}
+                Starting from €{item.cheapestPrice}
               </span>
               {item.rating && (
                 <div className="fbRating">

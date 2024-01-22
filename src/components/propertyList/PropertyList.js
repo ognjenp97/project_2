@@ -12,7 +12,8 @@ import cottages from "../image/cottagesimg.jpeg";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { SearchContext } from "../../context/SearchContext";
 
 const responsive = {
   desktop: {
@@ -43,8 +44,13 @@ const PropertyList = () => {
   });
 
   const navigate = useNavigate();
+  const { dispatch } = useContext(SearchContext);
 
   const handleSearch = (clickedDestination) => {
+    dispatch({
+      type: "NEW_SEARCH",
+      payload: { destination: clickedDestination, dates, options },
+    });
     navigate("/hotels", {
       state: { destination: clickedDestination, dates, options },
     });

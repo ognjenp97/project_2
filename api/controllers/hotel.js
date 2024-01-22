@@ -27,6 +27,22 @@ export const updateHotel = async (req, res, next) => {
   }
 };
 
+export const updateHotelAvailability = async (req, res, next) => {
+  try {
+    await Hotel.updateOne(
+      { _id: req.params.id },
+      {
+        $push: {
+          unavailableDates: req.body.dates,
+        },
+      }
+    );
+    res.status(200).json("Hotel status has been updated.");
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const deleteHotel = async (req, res, next) => {
   try {
     await Hotel.findByIdAndDelete(req.params.id);

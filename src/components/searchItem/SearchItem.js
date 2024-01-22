@@ -37,7 +37,7 @@ const SearchItem = ({ item }) => {
           </div>
         )}
         <div className="siDetailTexts">
-          <span className="siPrice">${item.cheapestPrice}</span>
+          <span className="siPrice">€{item.cheapestPrice}</span>
           <button
             className="siCheckButton"
             onClick={() => handleClick(item._id)}

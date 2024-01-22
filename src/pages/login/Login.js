@@ -2,7 +2,7 @@ import axios from "axios";
 import { useContext, useState } from "react";
 import "./login.css";
 import { AuthContext } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [credentials, setCredentials] = useState({
@@ -31,26 +31,35 @@ const Login = () => {
   };
 
   return (
-    <div className="login">
-      <div className="lContainer">
-        <input
-          type="text"
-          placeholder="username"
-          id="username"
-          onChange={handleChange}
-          className="lInput"
-        />
-        <input
-          type="password"
-          placeholder="password"
-          id="password"
-          onChange={handleChange}
-          className="lInput"
-        />
-        <button disabled={loading} onClick={handleClick} className="lButton">
-          Login
-        </button>
-        {error && <span>{error.message}</span>}
+    <div>
+      <div className="navbar">
+        <div className="navContainer">
+          <Link to="/" style={{ color: "inherit", textDecoration: "none" }}>
+            <span className="logo">Real Estate Booking</span>
+          </Link>
+        </div>
+      </div>
+      <div className="login">
+        <div className="lContainer">
+          <input
+            type="text"
+            placeholder="username"
+            id="username"
+            onChange={handleChange}
+            className="lInput"
+          />
+          <input
+            type="password"
+            placeholder="password"
+            id="password"
+            onChange={handleChange}
+            className="lInput"
+          />
+          <button disabled={loading} onClick={handleClick} className="lButton">
+            Login
+          </button>
+          {error && <span>{error.message}</span>}
+        </div>
       </div>
     </div>
   );

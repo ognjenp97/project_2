@@ -9,6 +9,7 @@ import {
   countByCity,
   countByType,
   getHotelRooms,
+  updateHotelAvailability,
 } from "../controllers/hotel.js";
 import { verifyAdmin } from "../utils/verifyToken.js";
 const router = express.Router();
@@ -16,6 +17,7 @@ const router = express.Router();
 router.post("/", verifyAdmin, createHotel);
 
 router.put("/:id", verifyAdmin, updateHotel);
+router.put("/availability/:id", updateHotelAvailability);
 
 router.delete("/:id", verifyAdmin, deleteHotel);
 

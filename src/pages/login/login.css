@@ -1,9 +1,27 @@
+.navbar {
+  height: 60px;
+  background-color: #148471;
+  display: flex;
+  justify-content: center;
+}
+
+.navContainer {
+  width: 100%;
+  max-width: 1280px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .login {
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #20bba1;
+  background-image: url("/src/components/image/loginimg.webp");
+  background-size: cover;
+  background-position: center;
 }
 
 .lContainer {
