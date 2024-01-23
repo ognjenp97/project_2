@@ -14,41 +14,50 @@
   justify-content: space-between;
 }
 
-.log {
+.reg {
   background-image: url("/src/components/image/loginimg.webp");
   background-size: cover;
   background-position: center;
 }
 
-.login {
+.register {
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.lContainer {
+.regContainer {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  background: none;
 }
 
-.lTitle {
+.regTitle {
   font-size: 30px;
   font-weight: bold;
 }
 
-.lName {
+.regName {
   color: blue;
   cursor: pointer;
 }
 
-.lInput {
+.regInput {
   height: 30px;
   padding: 10px;
 }
 
-.lButton {
+.password-match {
+  color: green;
+}
+
+.password-not-match {
+  color: red;
+}
+
+.regButton {
   border: none;
   padding: 10px 20px;
   background-color: #148471;
@@ -59,7 +68,7 @@
   border-color: black;
 }
 
-.lButton:disabled {
+.regButton:disabled {
   background-color: #148471;
   cursor: not-allowed;
 }

@@ -31,7 +31,7 @@ const Login = () => {
   };
 
   return (
-    <div>
+    <div className="log">
       <div className="navbar">
         <div className="navContainer">
           <Link to="/" style={{ color: "inherit", textDecoration: "none" }}>
@@ -41,16 +41,23 @@ const Login = () => {
       </div>
       <div className="login">
         <div className="lContainer">
+          <span className="lTitle">Log in to your account</span>
+          <b>
+            Don't have an account?{" "}
+            <span className="lName" onClick={() => navigate("/register")}>
+              Sign Up
+            </span>
+          </b>
           <input
             type="text"
-            placeholder="username"
+            placeholder="Username"
             id="username"
             onChange={handleChange}
             className="lInput"
           />
           <input
             type="password"
-            placeholder="password"
+            placeholder="Password"
             id="password"
             onChange={handleChange}
             className="lInput"
@@ -58,7 +65,11 @@ const Login = () => {
           <button disabled={loading} onClick={handleClick} className="lButton">
             Login
           </button>
-          {error && <span>{error.message}</span>}
+          {error && (
+            <span style={{ color: "red" }}>
+              <b>{error.message}</b>
+            </span>
+          )}
         </div>
       </div>
     </div>

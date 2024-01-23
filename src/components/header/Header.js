@@ -72,7 +72,12 @@ const Header = ({ type }) => {
               off-grid adventures
               {!user && (
                 <div>
-                  <button className="headerBtn">Sign in / Register</button>
+                  <button
+                    className="headerBtn"
+                    onClick={() => navigate("/register")}
+                  >
+                    Sign in / Register
+                  </button>
                 </div>
               )}
             </p>
