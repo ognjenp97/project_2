@@ -12,8 +12,6 @@ const Register = () => {
     email: undefined,
   });
 
-  const { password, confirmPassword } = credentials;
-
   const { loading, error, dispatch } = useContext(AuthContext);
 
   const navigate = useNavigate();

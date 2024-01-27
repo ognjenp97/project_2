@@ -51,7 +51,12 @@ const FeaturedBooking = () => {
                 className="fbImg"
                 onClick={() => handleClick(item._id, item.destination)}
               />
-              <span className="fbName">{item.name}</span>
+              <span
+                className="fbName"
+                onClick={() => handleClick(item._id, item.destination)}
+              >
+                {item.name}
+              </span>
               <span className="fbCity">{item.city}</span>
               <span className="fbPrice">
                 Starting from €{item.cheapestPrice}

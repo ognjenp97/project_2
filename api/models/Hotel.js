@@ -45,9 +45,13 @@ const HotelSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  userId: {
+    type: [String],
+    required: true,
+  },
   featured: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   unavailableDates: [{ type: Date }],
 });

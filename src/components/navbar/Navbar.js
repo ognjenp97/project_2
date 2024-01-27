@@ -22,11 +22,20 @@ const Navbar = () => {
     setOpen(false);
   }
 
+  const addHotel = () => {
+    handleCloseMenu();
+    navigate("/add");
+  };
+  const { dispatch } = useContext(AuthContext);
+
   const logoutUser = () => {
     handleCloseMenu();
-    localStorage.removeItem("user");
-    navigate("/");
-    window.location.reload();
+    try {
+      dispatch({ type: "LOGOUT" });
+      navigate("/");
+    } catch (err) {
+      dispatch({ type: "LOGIN_FAILURE", payload: err.response.data });
+    }
   };
 
   return (
@@ -55,6 +64,7 @@ const Navbar = () => {
               }}
             >
               <div className="menuItem">
+                <MenuItem onClick={addHotel}>Add new real estate</MenuItem>
                 <MenuItem onClick={handleCloseMenu}>Your reservations</MenuItem>
                 <MenuItem onClick={logoutUser}>Log out</MenuItem>
               </div>
