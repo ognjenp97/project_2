@@ -86,3 +86,25 @@
 .listResult {
   flex: 3;
 }
+
+.city:hover {
+  color: blue;
+  cursor: pointer;
+}
+
+.city {
+  font: 20px;
+}
+
+.contact {
+  font-weight: bold;
+}
+
+.cs:hover {
+  cursor: pointer;
+}
+
+.cs {
+  color: blue;
+  text-decoration: underline;
+}

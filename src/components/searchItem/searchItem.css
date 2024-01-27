@@ -12,6 +12,7 @@
   width: 200px;
   height: 200px;
   object-fit: cover;
+  cursor: pointer;
 }
 
 .siDesc {
@@ -24,13 +25,25 @@
 .siTitle {
   font-size: 20px;
   color: #148471;
+  cursor: pointer;
+}
+
+.siCity {
+  font-size: 12px;
+  font-weight: bold;
+  color: #148471;
 }
 
 .siDistance {
   font-size: 12px;
+  margin-top: -15px;
 }
 
-.siSubtitle,
+.siSubtitle {
+  font-size: 12px;
+  font-weight: bold;
+}
+
 .siFeatures {
   font-size: 12px;
 }

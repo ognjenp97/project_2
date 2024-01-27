@@ -1,0 +1,74 @@
+.navbar {
+  height: 60px;
+  background-color: #148471;
+  display: flex;
+  justify-content: center;
+}
+
+.navContainer {
+  width: 100%;
+  max-width: 1280px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reg {
+  background-image: url("/src/components/image/loginimg.webp");
+  background-size: cover;
+  background-position: center;
+}
+
+.register {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.regContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: none;
+}
+
+.regTitle {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.regName {
+  color: blue;
+  cursor: pointer;
+}
+
+.regInput {
+  height: 30px;
+  padding: 10px;
+}
+
+.password-match {
+  color: green;
+}
+
+.password-not-match {
+  color: red;
+}
+
+.regButton {
+  border: none;
+  padding: 10px 20px;
+  background-color: #148471;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+  border-color: black;
+}
+
+.regButton:disabled {
+  background-color: #148471;
+  cursor: not-allowed;
+}

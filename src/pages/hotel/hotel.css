@@ -43,6 +43,11 @@
   font-weight: 500;
 }
 
+.hotelPriceHighlight {
+  color: #008009;
+  font-weight: 500;
+}
+
 .hotelImages {
   display: flex;
   flex-wrap: wrap;

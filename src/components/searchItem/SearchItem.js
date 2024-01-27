@@ -1,32 +1,49 @@
 import "./searchItem.css";
-import image from "../image/img.jpg";
+import { useNavigate } from "react-router-dom";
 
-const SearchItem = () => {
+const SearchItem = ({ item }) => {
+  const navigate = useNavigate();
+
+  const handleClick = (ClickId) => {
+    navigate(`/hotels/${ClickId}`);
+  };
   return (
     <div className="searchItem">
-      <img src={image} className="siImg" />
+      <img
+        src={item.photos[0]}
+        className="siImg"
+        onClick={() => handleClick(item._id)}
+      />
       <div className="siDesc">
-        <h1 className="siTitle">Tower Street Apartments</h1>
-        <span className="siDistance">500m from center</span>
-        <span className="siSubtitle">
-          Studio Apartment with Air conditioning
+        <h1 className="siTitle" onClick={() => handleClick(item._id)}>
+          {item.name}
+        </h1>
+        <span className="siDistance">
+          <span className="siCity">{item.city}</span> - {item.distance}m from
+          center
         </span>
-        <span className="siFeatures">
-          Entire studio - 1 bathroom - 1 full bed
-        </span>
+        <span className="siSubtitle">{item.title}</span>
+        <span className="siFeatures">{item.desc}</span>
         <span className="siCancelOp">Free cancellation</span>
         <span className="siCancelOpSubtitle">
           You can cancel later, so lock in this great price today
         </span>
       </div>
       <div className="siDetails">
-        <div className="siRating">
-          <span>Excellent</span>
-          <button>8.9</button>
-        </div>
+        {item.rating && (
+          <div className="siRating">
+            <span>Excellent</span>
+            <button>{item.rating}</button>
+          </div>
+        )}
         <div className="siDetailTexts">
-          <span className="siPrice">€123</span>
-          <button className="siCheckButton">See availability</button>
+          <span className="siPrice">€{item.cheapestPrice}</span>
+          <button
+            className="siCheckButton"
+            onClick={() => handleClick(item._id)}
+          >
+            See availability
+          </button>
         </div>
       </div>
     </div>
