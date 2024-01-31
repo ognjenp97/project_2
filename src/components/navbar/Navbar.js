@@ -26,6 +26,11 @@ const Navbar = () => {
     handleCloseMenu();
     navigate("/add");
   };
+
+  const listHotel = () => {
+    handleCloseMenu();
+    navigate("/list");
+  };
   const { dispatch } = useContext(AuthContext);
 
   const logoutUser = () => {
@@ -65,7 +70,7 @@ const Navbar = () => {
             >
               <div className="menuItem">
                 <MenuItem onClick={addHotel}>Add new real estate</MenuItem>
-                <MenuItem onClick={handleCloseMenu}>Your reservations</MenuItem>
+                <MenuItem onClick={listHotel}>Your real estate list</MenuItem>
                 <MenuItem onClick={logoutUser}>Log out</MenuItem>
               </div>
             </Menu>

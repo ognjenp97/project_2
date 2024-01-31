@@ -230,7 +230,7 @@ const NewHotel = () => {
             <td>
               <label>Distance from center (meter):</label>
               <input
-                type="text"
+                type="number"
                 id="distance"
                 onChange={handleChangeHotel}
                 className="addDistance"
