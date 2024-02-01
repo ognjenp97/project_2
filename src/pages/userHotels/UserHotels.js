@@ -7,10 +7,44 @@ import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
+import { useEffect, useState } from "react";
+import { SearchContext } from "../../context/SearchContext";
+import axios from "axios";
 
 const UserHotels = () => {
   const { user } = useContext(AuthContext);
   const { data, loading, error } = useFetch(`/hotels?userId=${user._id}`);
+
+  const [dates, setDate] = useState([
+    {
+      today: new Date(),
+      startDate: new Date(),
+      endDate: new Date(),
+      key: "selection",
+    },
+  ]);
+  dates[0].endDate.setDate(dates[0].today.getDate() + 1);
+  const [options] = useState({
+    adult: 1,
+    children: 0,
+    room: 1,
+  });
+
+  const { dispatch } = useContext(SearchContext);
+
+  const handleSearch = () => {
+    dispatch({
+      type: "NEW_SEARCH",
+      payload: { dates, options },
+    });
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`/hotels/${id}`);
+      window.location.reload();
+    } catch (err) {}
+  };
 
   const actionColumn = [
     {
@@ -31,14 +65,22 @@ const UserHotels = () => {
               to={`/hotels/${params.row._id}`}
               style={{ textDecoration: "none" }}
             >
-              <div className="viewButton" style={{ marginLeft: "auto" }}>
+              <div
+                className="viewButton"
+                onClick={handleSearch}
+                style={{ marginLeft: "auto" }}
+              >
                 View
               </div>
             </Link>
             <div className="editButton" style={{ marginLeft: "auto" }}>
               Edit
             </div>
-            <div className="deleteButton" style={{ marginLeft: "auto" }}>
+            <div
+              className="deleteButton"
+              onClick={() => handleDelete(params.row._id)}
+              style={{ marginLeft: "auto" }}
+            >
               Delete
             </div>
           </div>
