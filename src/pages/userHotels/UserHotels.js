@@ -2,18 +2,24 @@ import React from "react";
 import "./userHotels.css";
 import { DataGrid } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
-import useFetch from "../../hooks/useFetch";
 import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
 import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { SearchContext } from "../../context/SearchContext";
 import axios from "axios";
 
 const UserHotels = () => {
-  const { user } = useContext(AuthContext);
-  const { data, loading, error } = useFetch(`/hotels?userId=${user._id}`);
+  const [isViewRoomsClicked, setIsViewRoomsClicked] = useState(false);
+  const [selectedHotelID, setSelectedHotelID] = useState([]);
+
+  const [displayedColumn, setDisplayedColumn] = useState();
+  const [displayedRows, setDisplayedRows] = useState();
+  const selectedHotelIDRef = useRef(selectedHotelID);
+
+  const [columns, setColumn] = useState();
+  const [rows, setRows] = useState();
+  const [photo, setPhoto] = useState([]);
 
   const [dates, setDate] = useState([
     {
@@ -46,7 +52,71 @@ const UserHotels = () => {
     } catch (err) {}
   };
 
+  useEffect(() => {
+    selectedHotelIDRef.current = selectedHotelID;
+  }, [selectedHotelID]);
+
+  const handleViewRoom = async (id) => {
+    try {
+      const response = await axios.get(`/hotels/roomData/${id}`);
+      setDisplayedColumn(response.data.columns.concat(deleteRoom));
+      setDisplayedRows(response.data.rows);
+
+      setIsViewRoomsClicked(true);
+      setSelectedHotelID(response.data.id);
+    } catch (err) {}
+  };
+
+  const handleDeleteRoom = async (id) => {
+    try {
+      await axios.delete(`/rooms/${id}/${selectedHotelIDRef.current}`);
+      await handleViewRoom(selectedHotelIDRef.current);
+    } catch (err) {}
+  };
+
+  const deleteRoom = [
+    {
+      field: "action",
+      headerName: "",
+      width: 100,
+      align: "center",
+      renderCell: (params) => {
+        return (
+          <div
+            className="deleteButton"
+            onClick={() => handleDeleteRoom(params.row._id)}
+            style={{ marginLeft: "auto" }}
+          >
+            Delete
+          </div>
+        );
+      },
+    },
+  ];
+
   const actionColumn = [
+    {
+      field: "room",
+      headerName: "Rooms",
+      width: 110,
+      align: "right",
+      headerAlign: "right",
+      renderCell: (params) => {
+        const item = params.row;
+        if (["hotel", "motel"].includes(item.type)) {
+          return (
+            <div>
+              <button
+                className="viewRoomButton"
+                onClick={() => handleViewRoom(params.row._id)}
+              >
+                View rooms
+              </button>
+            </div>
+          );
+        }
+      },
+    },
     {
       field: "action",
       headerName: "Action",
@@ -89,30 +159,16 @@ const UserHotels = () => {
     },
   ];
 
-  const rows = data.map((item, index) => ({
-    id: index + 1,
-    photo: item.photos[0],
-    name: item.name,
-    type: item.type,
-    city: item.city,
-    title: item.title,
-    room: item.rooms,
-    _id: item._id,
-  }));
-
-  const CustomCell = ({ value, type }) => {
-    if (["hotel", "motel"].includes(type)) {
-      return (
-        <div>
-          <button className="viewRoomButton">View rooms</button>
-        </div>
-      );
-    } else {
-      return null;
-    }
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("/hotels/hotelData");
+      setColumn(response.data.column);
+      setRows(response.data.row);
+      setPhoto(response.data.photo);
+    } catch (err) {}
   };
 
-  const columns = [
+  const columnsID = [
     {
       field: "id",
       headerName: "",
@@ -127,37 +183,17 @@ const UserHotels = () => {
         <img className="cellImg" src={params.value} alt="Property" />
       ),
     },
-    {
-      field: "name",
-      headerName: "Name",
-      width: 200,
-    },
-    {
-      field: "title",
-      headerName: "Title",
-      width: 200,
-    },
-    {
-      field: "city",
-      headerName: "City",
-      width: 200,
-    },
-    {
-      field: "type",
-      headerName: "Type",
-      width: 140,
-    },
-    {
-      field: "room",
-      headerName: "Rooms",
-      width: 110,
-      align: "right",
-      headerAlign: "right",
-      renderCell: (params) => (
-        <CustomCell value={params.value} type={params.row.type} />
-      ),
-    },
   ];
+
+  const rowsID = photo.map((item, index) => ({
+    id: index + 1,
+    photo: item.photo,
+    ...rows[index],
+  }));
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div>
@@ -165,16 +201,47 @@ const UserHotels = () => {
       <br />
       <div className="datatable">
         <div className="datatableTitle">
-          Your real estate list
-          <Link to={`/add`} className="link">
-            Add New
-          </Link>
+          {isViewRoomsClicked ? (
+            <>
+              <Link
+                to={`/list`}
+                className="link"
+                onClick={() => setIsViewRoomsClicked(false)}
+              >
+                Back
+              </Link>
+              Rooms
+            </>
+          ) : (
+            "Your real estate list"
+          )}
+          {isViewRoomsClicked ? (
+            <>
+              <Link to={`/add`} className="link">
+                Add New Room
+              </Link>
+            </>
+          ) : (
+            <Link to={`/add`} className="link">
+              Add New
+            </Link>
+          )}
         </div>
-        <DataGrid
-          className="datagrid"
-          rows={rows}
-          columns={columns.concat(actionColumn)}
-        />
+        <br />
+
+        {columns && rows ? (
+          <DataGrid
+            className="datagrid"
+            rows={isViewRoomsClicked ? displayedRows : rowsID}
+            columns={
+              isViewRoomsClicked
+                ? displayedColumn
+                : columnsID.concat(columns.concat(actionColumn))
+            }
+          />
+        ) : (
+          <p>Loading...</p>
+        )}
       </div>
       <br />
       <br />
