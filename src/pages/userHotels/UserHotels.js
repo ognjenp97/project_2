@@ -58,7 +58,7 @@ const UserHotels = () => {
 
   const handleViewRoom = async (id) => {
     try {
-      const response = await axios.get(`/hotels/roomData/${id}`);
+      const response = await axios.get(`/hotels/${id}/roomData`);
       setDisplayedColumn(response.data.columns.concat(deleteRoom));
       setDisplayedRows(response.data.rows);
 
@@ -69,7 +69,7 @@ const UserHotels = () => {
 
   const handleDeleteRoom = async (id) => {
     try {
-      await axios.delete(`/rooms/${id}/${selectedHotelIDRef.current}`);
+      await axios.delete(`/hotels/${selectedHotelIDRef.current}/rooms/${id}`);
       await handleViewRoom(selectedHotelIDRef.current);
     } catch (err) {}
   };
@@ -127,9 +127,14 @@ const UserHotels = () => {
         return (
           <div className="cellAction">
             {["hotel", "motel"].includes(item.type) && (
-              <div className="addRoomButton" style={{ marginLeft: "auto" }}>
-                Add Room
-              </div>
+              <Link
+                to={`/addRooms/${params.row._id}`}
+                style={{ textDecoration: "none" }}
+              >
+                <div className="addRoomButton" style={{ marginLeft: "auto" }}>
+                  Add Room
+                </div>
+              </Link>
             )}
             <Link
               to={`/hotels/${params.row._id}`}
@@ -217,7 +222,7 @@ const UserHotels = () => {
           )}
           {isViewRoomsClicked ? (
             <>
-              <Link to={`/add`} className="link">
+              <Link to={`/addRooms/${selectedHotelID}`} className="link">
                 Add New Room
               </Link>
             </>

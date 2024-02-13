@@ -6,6 +6,7 @@ import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import Add from "./pages/add/Add";
 import UserHotels from "./pages/userHotels/UserHotels";
+import AddRooms from "./pages/addRooms/AddRooms";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/add" element={<Add />} />
         <Route path="/list" element={<UserHotels />} />
+        <Route path="/addRooms/:id" element={<AddRooms />} />
       </Routes>
     </BrowserRouter>
   );

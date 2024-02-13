@@ -139,7 +139,7 @@ const NewHotel = () => {
         hotelResponse.data.type === "motel"
       ) {
         const hotelId = hotelResponse.data._id;
-        await axios.post(`/rooms/${hotelId}`, info);
+        await axios.post(`hotels/${hotelId}/rooms`, info);
       }
       navigate("/");
     } catch (error) {
@@ -278,7 +278,7 @@ const NewHotel = () => {
               />
             </td>
             <td>
-              <label>Price room:</label>
+              <label>Price room (€):</label>
               <input
                 type="number"
                 id="price"

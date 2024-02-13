@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 const Reserve = ({ setOpen, hotelId }) => {
   const [selectedRooms, setSelectedRooms] = useState([]);
-  const { data, loading, error } = useFetch(`/hotels/room/${hotelId}`);
+  const { data, loading, error } = useFetch(`/hotels/${hotelId}/rooms`);
   const { dates } = useContext(SearchContext);
   const navigate = useNavigate();
   const [hotelUnavailableDates, setHotelUnavailableDates] = useState([]);
@@ -17,7 +17,7 @@ const Reserve = ({ setOpen, hotelId }) => {
   useEffect(() => {
     const fetchHotelData = async () => {
       try {
-        const response = await axios.get(`/hotels/find/${hotelId}`);
+        const response = await axios.get(`/hotels/${hotelId}`);
         setHotelUnavailableDates(response.data.unavailableDates || []);
       } catch (error) {
         console.error("Error fetching hotel data:", error);
@@ -53,7 +53,7 @@ const Reserve = ({ setOpen, hotelId }) => {
 
   const addUnavailableDates = async () => {
     try {
-      await axios.put(`/hotels/availability/${hotelId}`, {
+      await axios.put(`/hotels/${hotelId}/availability`, {
         dates: alldates,
       });
       setOpen(false);
