@@ -4,7 +4,7 @@ import { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
 const NewHotel = () => {
@@ -14,6 +14,8 @@ const NewHotel = () => {
   const { user } = useContext(AuthContext);
   const [isFormValid, setIsFormValid] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const { id } = useParams();
+  const isEditMode = !!id;
 
   const [credentials, setCredentials] = useState({
     name: undefined,
@@ -41,6 +43,47 @@ const NewHotel = () => {
     setCredentials((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
+  useEffect(() => {
+    if (id) {
+      const fetchHotelData = async () => {
+        try {
+          const response = await axios.get(`/hotels/${id}`);
+          const hotelData = response.data;
+
+          setCredentials({
+            name: hotelData.name,
+            type: hotelData.type,
+            city: hotelData.city,
+            address: hotelData.address,
+            distance: hotelData.distance,
+            cheapestPrice: hotelData.cheapestPrice,
+            title: hotelData.title,
+            desc: hotelData.desc,
+            photos: hotelData.photos,
+            userId: hotelData.userId,
+          });
+          if (hotelData.type === "hotel" || hotelData.type === "motel") {
+            setPropertyType(false);
+            if (hotelData.rooms.length > 0) {
+              const rooms = await axios.get(`/rooms/${hotelData.rooms[0]}`);
+              const roomData = rooms.data;
+              setInfo({
+                title: roomData.title,
+                price: roomData.price,
+                maxPeople: roomData.maxPeople,
+                desc: roomData.desc,
+                roomNumbers: roomData.roomNumbers.map((room) => room.number),
+              });
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching hotel data:", error);
+        }
+      };
+      fetchHotelData();
+    }
+  }, [id]);
+
   const handleSelectChange = (e) => {
     const selectedValue = e.target.value;
     setSelectedOption(selectedValue);
@@ -52,18 +95,6 @@ const NewHotel = () => {
   const handleChange = (e) => {
     setInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
-
-  function extractNumbers(e) {
-    const inputString = e.target.value;
-    const numberRegex = /[-+]?\d*\.?\d+/g;
-    const numbersArray = inputString.match(numberRegex);
-    const numbers = numbersArray.map(Number);
-    const niz = numbers.map((number) => ({ number: number }));
-    setInfo((prevInfo) => ({
-      ...prevInfo,
-      roomNumbers: niz,
-    }));
-  }
 
   const checkFormValidity = () => {
     const isHotelInfoValid =
@@ -138,8 +169,66 @@ const NewHotel = () => {
         hotelResponse.data.type === "hotel" ||
         hotelResponse.data.type === "motel"
       ) {
+        const { roomNumbers, ...infoWithoutRoomNumbers } = info;
         const hotelId = hotelResponse.data._id;
-        await axios.post(`hotels/${hotelId}/rooms`, info);
+        const numberRegex = /[-+]?\d*\.?\d+/g;
+        const numbersArray = roomNumbers.match(numberRegex);
+        const numbers = numbersArray.map(Number);
+        const niz = numbers.map((number) => ({ number: number }));
+        await axios.post(`hotels/${hotelId}/rooms`, {
+          ...infoWithoutRoomNumbers,
+          roomNumbers: niz,
+        });
+      }
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleEditClick = async () => {
+    document.documentElement.classList.add("uploading");
+    setIsUploading(true);
+    const apiKey = "26dd588bc6ba7a499a8cf0e5d680e196";
+    try {
+      if (files.length > 0) {
+        const imageUrls = await uploadImagesToImgBB(files, apiKey);
+        await axios.put(`hotels/${id}`, {
+          ...credentials,
+          photos: imageUrls,
+        });
+      } else {
+        await axios.put(`hotels/${id}`, {
+          ...credentials,
+        });
+      }
+      const hotelResponse = await axios.get(`hotels/${id}`);
+      if (
+        hotelResponse.data.type === "hotel" ||
+        hotelResponse.data.type === "motel"
+      ) {
+        const { roomNumbers, ...infoWithoutRoomNumbers } = info;
+        const roomId = hotelResponse.data.rooms[0];
+        const roomNumbersString = Array.isArray(roomNumbers)
+          ? roomNumbers.join(" ")
+          : roomNumbers;
+        const numberRegex = /[-+]?\d*\.?\d+/g;
+        const numbersArray = roomNumbersString.match(numberRegex);
+        const numbers = numbersArray.map(Number);
+        const niz = numbers.map((number) => ({ number: number }));
+        if (roomId) {
+          await axios.put(`rooms/${roomId}`, {
+            ...infoWithoutRoomNumbers,
+            roomNumbers: niz,
+          });
+        } else {
+          await axios.post(`hotels/${id}/rooms`, {
+            ...infoWithoutRoomNumbers,
+            roomNumbers: niz,
+          });
+        }
       }
       navigate("/");
     } catch (error) {
@@ -164,188 +253,205 @@ const NewHotel = () => {
         <br />
         <br />
         <table>
-          <tr>
-            <td>
-              <label>Name:</label>
-              <input
-                type="text"
-                id="name"
-                onChange={handleChangeHotel}
-                className="addName"
-              />
-            </td>
-            <td>
-              <label>Type:</label>
-              <select
-                id="type"
-                value={selectedOption}
-                onChange={(e) => {
-                  handleSelectChange(e);
-                  handleChangeHotel(e);
-                }}
-                className="addType"
-              >
-                <option value=""></option>
-                <option value="hotel">hotel</option>
-                <option value="villa">villa</option>
-                <option value="apartment">apartment</option>
-                <option value="cottage">cottage</option>
-                <option value="house">house</option>
-                <option value="motel">motel</option>
-                <option value="business space">business space</option>
-                <option value="garage">garage</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label>Title:</label>
-              <input
-                type="text"
-                id="title"
-                onChange={handleChangeHotel}
-                className="addTitle"
-              />
-            </td>
-            <td>
-              <label>City:</label>
-              <input
-                type="text"
-                id="city"
-                onChange={handleChangeHotel}
-                className="addCity"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label>Address:</label>
-              <input
-                type="text"
-                id="address"
-                onChange={handleChangeHotel}
-                className="addAddress"
-              />
-            </td>
-            <td>
-              <label>Distance from center (meter):</label>
-              <input
-                type="number"
-                id="distance"
-                onChange={handleChangeHotel}
-                className="addDistance"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label>Description:</label>
-              <textarea
-                rows="6"
-                id="desc"
-                onChange={handleChangeHotel}
-                className="addDescription"
-              />
-            </td>
-            <div className="aT">
+          <tbody>
+            <tr>
               <td>
+                <label>Name:</label>
+                <input
+                  type="text"
+                  id="name"
+                  onChange={handleChangeHotel}
+                  value={credentials.name || ""}
+                  className="addName"
+                />
+              </td>
+              <td>
+                <label>Type:</label>
+                <select
+                  id="type"
+                  value={credentials.type || selectedOption}
+                  onChange={(e) => {
+                    handleSelectChange(e);
+                    handleChangeHotel(e);
+                  }}
+                  className="addType"
+                >
+                  <option value=""></option>
+                  <option value="hotel">hotel</option>
+                  <option value="villa">villa</option>
+                  <option value="apartment">apartment</option>
+                  <option value="cottage">cottage</option>
+                  <option value="house">house</option>
+                  <option value="motel">motel</option>
+                  <option value="business space">business space</option>
+                  <option value="garage">garage</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>Title:</label>
+                <input
+                  type="text"
+                  id="title"
+                  onChange={handleChangeHotel}
+                  value={credentials.title || ""}
+                  className="addTitle"
+                />
+              </td>
+              <td>
+                <label>City:</label>
+                <input
+                  type="text"
+                  id="city"
+                  onChange={handleChangeHotel}
+                  value={credentials.city || ""}
+                  className="addCity"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>Address:</label>
+                <input
+                  type="text"
+                  id="address"
+                  onChange={handleChangeHotel}
+                  value={credentials.address || ""}
+                  className="addAddress"
+                />
+              </td>
+              <td>
+                <label>Distance from center (meter):</label>
+                <input
+                  type="number"
+                  id="distance"
+                  onChange={handleChangeHotel}
+                  value={credentials.distance || ""}
+                  className="addDistance"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>Description:</label>
+                <textarea
+                  rows="6"
+                  id="desc"
+                  onChange={handleChangeHotel}
+                  value={credentials.desc || ""}
+                  className="addDescription"
+                />
+              </td>
+              <td className="aT">
                 <label>Price (€):</label>
                 <input
                   type="number"
                   id="cheapestPrice"
                   onChange={handleChangeHotel}
+                  value={credentials.cheapestPrice || ""}
                   className="addPrice"
                 />
               </td>
-            </div>
-          </tr>
-          <tr>
-            <td>
-              <br />
-              <label className="lRooms">Rooms:</label>
-              <br />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label>Title room:</label>
-              <input
-                type="text"
-                id="title"
-                onChange={handleChange}
-                disabled={propertyType}
-                className="addTitleRoom"
-              />
-            </td>
-            <td>
-              <label>Price room (€):</label>
-              <input
-                type="number"
-                id="price"
-                onChange={handleChange}
-                disabled={propertyType}
-                className="addPriceRoom"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label>Max people for room:</label>
-              <input
-                type="number"
-                id="maxPeople"
-                onChange={handleChange}
-                disabled={propertyType}
-                className="addMaxPeople"
-              />
-              <label>Room numbers:</label>
-              <input
-                type="text"
-                placeholder={
-                  propertyType ? "" : "Enter room numbers (e.g. 101 102 103)"
-                }
-                onChange={extractNumbers}
-                disabled={propertyType}
-                className="addRoomNumbers"
-              />
-            </td>
-            <td>
-              <label>Description:</label>
-              <textarea
-                rows="6"
-                id="desc"
-                onChange={handleChange}
-                disabled={propertyType}
-                className="addDescriptionRoom"
-              />
-            </td>
-          </tr>
-          <br />
-          <tr>
-            <td>
-              <div className="formInput">
-                <label htmlFor="file">
-                  Image: <DriveFolderUploadOutlinedIcon className="icon" />
-                </label>
+            </tr>
+            <tr>
+              <td>
+                <br />
+                <label className="lRooms">Rooms:</label>
+                <br />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>Title room:</label>
                 <input
-                  type="file"
-                  id="file"
-                  multiple
-                  onChange={handleFileChange}
-                  style={{ display: "none" }}
+                  type="text"
+                  id="title"
+                  value={info.title || ""}
+                  onChange={handleChange}
+                  disabled={propertyType}
+                  className="addTitleRoom"
                 />
-              </div>
-            </td>
-            <td>
-              <button
-                className="addButton"
-                onClick={handleClick}
-                disabled={!isFormValid}
-              >
-                {isUploading ? "Loading images..." : "Send"}
-              </button>
-            </td>
-          </tr>
+              </td>
+              <td>
+                <label>Price room (€):</label>
+                <input
+                  type="number"
+                  id="price"
+                  value={info.price || ""}
+                  onChange={handleChange}
+                  disabled={propertyType}
+                  className="addPriceRoom"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>Max people for room:</label>
+                <input
+                  type="number"
+                  id="maxPeople"
+                  value={info.maxPeople || ""}
+                  onChange={handleChange}
+                  disabled={propertyType}
+                  className="addMaxPeople"
+                />
+                <label>Room numbers:</label>
+                <input
+                  type="text"
+                  id="roomNumbers"
+                  placeholder={
+                    propertyType ? "" : "Enter room numbers (e.g. 101 102 103)"
+                  }
+                  value={info.roomNumbers || ""}
+                  onChange={handleChange}
+                  disabled={propertyType}
+                  className="addRoomNumbers"
+                />
+              </td>
+              <td>
+                <label>Description:</label>
+                <textarea
+                  rows="6"
+                  id="desc"
+                  onChange={handleChange}
+                  value={info.desc || ""}
+                  disabled={propertyType}
+                  className="addDescriptionRoom"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div className="formInput">
+                  <br />
+                  <label htmlFor="file">
+                    Image: <DriveFolderUploadOutlinedIcon className="icon" />
+                  </label>
+                  <input
+                    type="file"
+                    id="file"
+                    multiple
+                    onChange={handleFileChange}
+                    style={{ display: "none" }}
+                  />
+                </div>
+              </td>
+              <td>
+                <button
+                  className="addButton"
+                  onClick={isEditMode ? handleEditClick : handleClick}
+                  disabled={!isFormValid}
+                >
+                  {isUploading
+                    ? "Loading images..."
+                    : isEditMode
+                    ? "Update"
+                    : "Send"}
+                </button>
+              </td>
+            </tr>
+          </tbody>
         </table>
         <br />
         <br />

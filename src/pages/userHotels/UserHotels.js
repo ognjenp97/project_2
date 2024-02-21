@@ -47,9 +47,18 @@ const UserHotels = () => {
 
   const handleDelete = async (id) => {
     try {
+      const hotelResponse = await axios.get(`/hotels/${id}`);
+      const hotel = hotelResponse.data;
+      if (hotel.rooms.length > 0) {
+        for (const roomId of hotel.rooms) {
+          await axios.delete(`/hotels/id/rooms/${roomId}`);
+        }
+      }
       await axios.delete(`/hotels/${id}`);
       window.location.reload();
-    } catch (err) {}
+    } catch (err) {
+      console.error("Error deleting hotel:", err);
+    }
   };
 
   useEffect(() => {
@@ -59,7 +68,7 @@ const UserHotels = () => {
   const handleViewRoom = async (id) => {
     try {
       const response = await axios.get(`/hotels/${id}/roomData`);
-      setDisplayedColumn(response.data.columns.concat(deleteRoom));
+      setDisplayedColumn(response.data.columns.concat(editDeleteRoom));
       setDisplayedRows(response.data.rows);
 
       setIsViewRoomsClicked(true);
@@ -74,20 +83,27 @@ const UserHotels = () => {
     } catch (err) {}
   };
 
-  const deleteRoom = [
+  const editDeleteRoom = [
     {
       field: "action",
       headerName: "",
-      width: 100,
+      width: 180,
       align: "center",
       renderCell: (params) => {
         return (
-          <div
-            className="deleteButton"
-            onClick={() => handleDeleteRoom(params.row._id)}
-            style={{ marginLeft: "auto" }}
-          >
-            Delete
+          <div className="cellAction">
+            <Link
+              to={`/addRooms/${params.row._id}`}
+              style={{ textDecoration: "none" }}
+            >
+              <div className="editButton">Edit rooms</div>
+            </Link>
+            <div
+              className="deleteButton"
+              onClick={() => handleDeleteRoom(params.row._id)}
+            >
+              Delete
+            </div>
           </div>
         );
       },
@@ -114,6 +130,8 @@ const UserHotels = () => {
               </button>
             </div>
           );
+        } else {
+          return null;
         }
       },
     },
@@ -148,9 +166,14 @@ const UserHotels = () => {
                 View
               </div>
             </Link>
-            <div className="editButton" style={{ marginLeft: "auto" }}>
-              Edit
-            </div>
+            <Link
+              to={`/edit/${params.row._id}`}
+              style={{ textDecoration: "none" }}
+            >
+              <div className="editButton" style={{ marginLeft: "auto" }}>
+                Edit
+              </div>
+            </Link>
             <div
               className="deleteButton"
               onClick={() => handleDelete(params.row._id)}
