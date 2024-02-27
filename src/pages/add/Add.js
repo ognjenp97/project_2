@@ -229,6 +229,12 @@ const NewHotel = () => {
             roomNumbers: niz,
           });
         }
+      } else {
+        if (hotelResponse.data.rooms) {
+          for (const room of hotelResponse.data.rooms) {
+            await axios.delete(`hotels/${id}/rooms/${room}`);
+          }
+        }
       }
       navigate("/");
     } catch (error) {

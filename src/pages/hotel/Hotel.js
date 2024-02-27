@@ -3,7 +3,7 @@ import Header from "../../components/header/Header";
 import Navbar from "../../components/navbar/Navbar";
 import MailList from "../../components/mailList/MailList";
 import Footer from "../../components/footer/Footer";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleArrowLeft,
@@ -16,6 +16,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { SearchContext } from "../../context/SearchContext";
 import { AuthContext } from "../../context/AuthContext";
 import Reserve from "../../components/reserve/Reserve";
+import axios from "axios";
 
 const Hotel = () => {
   const location = useLocation();
@@ -27,10 +28,15 @@ const Hotel = () => {
     setOpen(true);
   };
   const [openModal, setOpenModal] = useState(false);
-
+  const [otherButton, setOtherButton] = useState(false);
   const { data, loading, error } = useFetch(`/hotels/${id}`);
   const { user } = useContext(AuthContext);
+  const [showUnavailableDates, setShowUnavailableDates] = useState(false);
   const navigate = useNavigate();
+  const [userID, setUserID] = useState([]);
+  const [date, setDate] = useState([]);
+  const [roomNumber, setRoomNumber] = useState([]);
+  const [roomTitle, setRoomTitle] = useState([]);
 
   const { dates, options } = useContext(SearchContext);
 
@@ -40,8 +46,13 @@ const Hotel = () => {
     const diffDays = Math.ceil(timeDiff / MILLISECONDS_PER_DAY);
     return diffDays;
   }
-
   const days = dayDifference(dates[0].endDate, dates[0].startDate);
+
+  useEffect(() => {
+    if (user && data && data.userId && data.userId.length > 0) {
+      setOtherButton(user._id === data.userId[0]);
+    }
+  }, [user, data]);
 
   const handleMove = (direction) => {
     let newSlideNumber;
@@ -62,6 +73,63 @@ const Hotel = () => {
       setOpenModal(true);
     } else {
       navigate("/login");
+    }
+  };
+
+  const handleShowUnavailableDates = async () => {
+    fetchData();
+    setShowUnavailableDates(true);
+  };
+
+  const fetchData = async () => {
+    if (data && (data.type === "hotel" || data.type === "motel")) {
+      if (data && data.rooms.length > 0) {
+        setUserID([]);
+        setDate([]);
+        setRoomNumber([]);
+        setRoomTitle([]);
+        for (const room of data.rooms) {
+          const response = await axios.get(`/rooms/${room}`);
+          console.log(response.data);
+          for (const unavailableRoom of response.data.roomNumbers) {
+            console.log(unavailableRoom);
+            if (unavailableRoom.unavailableDates.length > 0) {
+              console.log(unavailableRoom.unavailableDates);
+              console.log(unavailableRoom.number);
+              for (const unavailableDate of unavailableRoom.unavailableDates) {
+                const getUser = await axios.get(
+                  `/users/${unavailableDate.userId}`
+                );
+                const user = getUser.data.username;
+                setUserID((prevUserID) => [...prevUserID, user]);
+                setDate((prevDate) => [
+                  ...prevDate,
+                  new Date(unavailableDate.date),
+                ]);
+                setRoomNumber((prevNumber) => [
+                  ...prevNumber,
+                  unavailableRoom.number,
+                ]);
+                setRoomTitle((prevTitle) => [
+                  ...prevTitle,
+                  response.data.title,
+                ]);
+              }
+            }
+          }
+        }
+      }
+    } else {
+      if (data && data.unavailableDates.length > 0) {
+        setUserID([]);
+        setDate([]);
+        for (const unavailableDate of data.unavailableDates) {
+          const response = await axios.get(`/users/${unavailableDate.userId}`);
+          const user = response.data.username;
+          setUserID((prevUserID) => [...prevUserID, user]);
+          setDate((prevDate) => [...prevDate, new Date(unavailableDate.date)]);
+        }
+      }
     }
   };
 
@@ -96,8 +164,15 @@ const Hotel = () => {
       ) : (
         <div className="hotelContainer">
           <div className="hotelWrapper">
-            <button className="bookNow" onClick={handleClick}>
-              Reserve or Book Now
+            <button
+              className="bookNow"
+              onClick={
+                user && otherButton ? handleShowUnavailableDates : handleClick
+              }
+            >
+              {user && otherButton
+                ? "Overview Reservation"
+                : "Reserve or Book Now"}
             </button>
             <h1 className="hotelTitle">{data.name}</h1>
             <div className="hotelAddress">
@@ -138,7 +213,17 @@ const Hotel = () => {
                   <b>€{days * data.cheapestPrice * options.room}</b> ({days}{" "}
                   nights)
                 </h2>
-                <button onClick={handleClick}>Reserve or Book Now!</button>
+                <button
+                  onClick={
+                    user && otherButton
+                      ? handleShowUnavailableDates
+                      : handleClick
+                  }
+                >
+                  {user && otherButton
+                    ? "Overview Reservation"
+                    : "Reserve or Book Now"}
+                </button>
               </div>
             </div>
           </div>
@@ -147,6 +232,79 @@ const Hotel = () => {
         </div>
       )}
       {openModal && <Reserve setOpen={setOpenModal} hotelId={id} />}
+      {showUnavailableDates && (
+        <div
+          className="unavailableDatesForm"
+          onClick={() => setShowUnavailableDates(false)}
+        >
+          <div className="unavailableDatesContent">
+            <FontAwesomeIcon icon={faCircleXmark} className="rCloseee" />
+            <div className="unavailableDates">
+              <b style={{ color: "#148471", fontSize: 20 }}>
+                Reservation overview
+              </b>
+              <br />
+              <div>
+                {data.type === "hotel" || data.type === "motel" ? (
+                  data.rooms.length > 0 ? (
+                    userID.length > 0 ? (
+                      <div>
+                        {userID.map((user, index) => (
+                          <div key={index}>
+                            {roomTitle[index] ===
+                            roomTitle[index - 1] ? null : (
+                              <>
+                                <br />
+                                <br />
+                                <span style={{ color: "#148471" }}>
+                                  Room: <b>{roomTitle[index]}</b>
+                                </span>
+                                <br />
+                              </>
+                            )}
+                            {roomNumber[index] ===
+                            roomNumber[index - 1] ? null : (
+                              <>
+                                <span style={{ color: "#148471" }}>
+                                  Number room: <b>{roomNumber[index]}</b>
+                                </span>
+                                <br />
+                              </>
+                            )}
+                            <b>{date[index].toLocaleDateString()}</b> - reserved
+                            <b> {user}</b>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      "Your real estate has not been reserved yet."
+                    )
+                  ) : (
+                    "Your real estate has not been reserved yet."
+                  )
+                ) : data.unavailableDates.length > 0 ? (
+                  <div>
+                    {userID.map((user, index) => (
+                      <div key={index}>
+                        <b>{date[index].toLocaleDateString()}</b> - reserved
+                        <b> {user}</b>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  "Your real estate has not been reserved yet."
+                )}
+                <button
+                  className="rHotelButton"
+                  onClick={() => setShowUnavailableDates(false)}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

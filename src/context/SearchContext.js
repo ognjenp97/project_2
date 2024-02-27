@@ -1,12 +1,16 @@
 import { createContext, useReducer } from "react";
 
+const today = new Date();
+const tomorrow = new Date(today);
+tomorrow.setDate(tomorrow.getDate() + 1);
+
 const INITIAL_STATE = {
   city: undefined,
-  dates: [],
+  dates: [{ startDate: today, endDate: tomorrow }],
   options: {
-    adult: undefined,
-    children: undefined,
-    room: undefined,
+    adult: 1,
+    children: 0,
+    room: 1,
   },
 };
 
