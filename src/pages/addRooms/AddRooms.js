@@ -1,6 +1,6 @@
 import "./addRooms.css";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../../config/axios-config";
 import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
 import { useNavigate, useParams } from "react-router-dom";
@@ -52,7 +52,7 @@ const NewHotel = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await axios.get(`/rooms/${id}`);
+        const response = await axiosInstance.get(`/rooms/${id}`);
         if (response && response.data) {
           setRoomId(true);
           setInfo({
@@ -79,7 +79,7 @@ const NewHotel = () => {
       const numbersArray = roomNumbers.match(numberRegex);
       const numbers = numbersArray.map(Number);
       const niz = numbers.map((number) => ({ number: number }));
-      await axios.post(`hotels/${id}/rooms`, {
+      await axiosInstance.post(`hotels/${id}/rooms`, {
         ...infoWithoutRoomNumbers,
         roomNumbers: niz,
       });
@@ -97,7 +97,7 @@ const NewHotel = () => {
       const numbersArray = roomNumbersString.match(numberRegex);
       const numbers = numbersArray.map(Number);
       const niz = numbers.map((number) => ({ number: number }));
-      await axios.put(`rooms/${id}`, {
+      await axiosInstance.put(`rooms/${id}`, {
         ...infoWithoutRoomNumbers,
         roomNumbers: niz,
       });

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../config/axios-config";
 
 const useFetch = (url) => {
   const [data, setData] = useState([]);
@@ -10,12 +10,7 @@ const useFetch = (url) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const cookieValue = document.cookie.match(
-          "(^|;)\\s*" + "token" + "\\s*=\\s*([^;]+)"
-        );
-        const token = cookieValue ? cookieValue.pop() : "";
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        const res = await axios.get(`http://localhost:8800/api${url}`);
+        const res = await axiosInstance.get(`http://localhost:8800/api${url}`);
         setData(res.data);
       } catch (err) {
         setError(err);
@@ -28,7 +23,7 @@ const useFetch = (url) => {
   const reFetch = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:8800/api${url}`);
+      const res = await axiosInstance.get(`http://localhost:8800/api${url}`);
       setData(res.data);
     } catch (err) {
       setError(err);

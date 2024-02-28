@@ -16,7 +16,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { SearchContext } from "../../context/SearchContext";
 import { AuthContext } from "../../context/AuthContext";
 import Reserve from "../../components/reserve/Reserve";
-import axios from "axios";
+import axiosInstance from "../../config/axios-config";
 
 const Hotel = () => {
   const location = useLocation();
@@ -89,7 +89,7 @@ const Hotel = () => {
         setRoomNumber([]);
         setRoomTitle([]);
         for (const room of data.rooms) {
-          const response = await axios.get(`/rooms/${room}`);
+          const response = await axiosInstance.get(`/rooms/${room}`);
           console.log(response.data);
           for (const unavailableRoom of response.data.roomNumbers) {
             console.log(unavailableRoom);
@@ -97,7 +97,7 @@ const Hotel = () => {
               console.log(unavailableRoom.unavailableDates);
               console.log(unavailableRoom.number);
               for (const unavailableDate of unavailableRoom.unavailableDates) {
-                const getUser = await axios.get(
+                const getUser = await axiosInstance.get(
                   `/users/${unavailableDate.userId}`
                 );
                 const user = getUser.data.username;
@@ -124,7 +124,9 @@ const Hotel = () => {
         setUserID([]);
         setDate([]);
         for (const unavailableDate of data.unavailableDates) {
-          const response = await axios.get(`/users/${unavailableDate.userId}`);
+          const response = await axiosInstance.get(
+            `/users/${unavailableDate.userId}`
+          );
           const user = response.data.username;
           setUserID((prevUserID) => [...prevUserID, user]);
           setDate((prevDate) => [...prevDate, new Date(unavailableDate.date)]);

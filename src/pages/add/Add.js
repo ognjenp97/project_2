@@ -1,7 +1,7 @@
 import "./add.css";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useContext, useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../../config/axios-config";
 import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
 import { useNavigate, useParams } from "react-router-dom";
@@ -47,7 +47,7 @@ const NewHotel = () => {
     if (id) {
       const fetchHotelData = async () => {
         try {
-          const response = await axios.get(`/hotels/${id}`);
+          const response = await axiosInstance.get(`/hotels/${id}`);
           const hotelData = response.data;
 
           setCredentials({
@@ -65,7 +65,9 @@ const NewHotel = () => {
           if (hotelData.type === "hotel" || hotelData.type === "motel") {
             setPropertyType(false);
             if (hotelData.rooms.length > 0) {
-              const rooms = await axios.get(`/rooms/${hotelData.rooms[0]}`);
+              const rooms = await axiosInstance.get(
+                `/rooms/${hotelData.rooms[0]}`
+              );
               const roomData = rooms.data;
               setInfo({
                 title: roomData.title,
@@ -134,7 +136,7 @@ const NewHotel = () => {
         const formData = new FormData();
         formData.append("image", image);
 
-        const response = await axios.post(
+        const response = await axiosInstance.post(
           "https://api.imgbb.com/1/upload?key=" + apiKey,
           formData
         );
@@ -161,7 +163,7 @@ const NewHotel = () => {
     const apiKey = "26dd588bc6ba7a499a8cf0e5d680e196";
     try {
       const imageUrls = await uploadImagesToImgBB(files, apiKey);
-      const hotelResponse = await axios.post("/hotels", {
+      const hotelResponse = await axiosInstance.post("/hotels", {
         ...credentials,
         photos: imageUrls,
       });
@@ -175,7 +177,7 @@ const NewHotel = () => {
         const numbersArray = roomNumbers.match(numberRegex);
         const numbers = numbersArray.map(Number);
         const niz = numbers.map((number) => ({ number: number }));
-        await axios.post(`hotels/${hotelId}/rooms`, {
+        await axiosInstance.post(`hotels/${hotelId}/rooms`, {
           ...infoWithoutRoomNumbers,
           roomNumbers: niz,
         });
@@ -195,16 +197,16 @@ const NewHotel = () => {
     try {
       if (files.length > 0) {
         const imageUrls = await uploadImagesToImgBB(files, apiKey);
-        await axios.put(`hotels/${id}`, {
+        await axiosInstance.put(`hotels/${id}`, {
           ...credentials,
           photos: imageUrls,
         });
       } else {
-        await axios.put(`hotels/${id}`, {
+        await axiosInstance.put(`hotels/${id}`, {
           ...credentials,
         });
       }
-      const hotelResponse = await axios.get(`hotels/${id}`);
+      const hotelResponse = await axiosInstance.get(`hotels/${id}`);
       if (
         hotelResponse.data.type === "hotel" ||
         hotelResponse.data.type === "motel"
@@ -219,12 +221,12 @@ const NewHotel = () => {
         const numbers = numbersArray.map(Number);
         const niz = numbers.map((number) => ({ number: number }));
         if (roomId) {
-          await axios.put(`rooms/${roomId}`, {
+          await axiosInstance.put(`rooms/${roomId}`, {
             ...infoWithoutRoomNumbers,
             roomNumbers: niz,
           });
         } else {
-          await axios.post(`hotels/${id}/rooms`, {
+          await axiosInstance.post(`hotels/${id}/rooms`, {
             ...infoWithoutRoomNumbers,
             roomNumbers: niz,
           });
@@ -232,7 +234,7 @@ const NewHotel = () => {
       } else {
         if (hotelResponse.data.rooms) {
           for (const room of hotelResponse.data.rooms) {
-            await axios.delete(`hotels/${id}/rooms/${room}`);
+            await axiosInstance.delete(`hotels/${id}/rooms/${room}`);
           }
         }
       }

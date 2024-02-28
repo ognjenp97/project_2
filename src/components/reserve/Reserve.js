@@ -4,7 +4,7 @@ import "./reserve.css";
 import useFetch from "../../hooks/useFetch";
 import { useContext, useState, useEffect } from "react";
 import { SearchContext } from "../../context/SearchContext";
-import axios from "axios";
+import axiosInstance from "../../config/axios-config";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -19,7 +19,7 @@ const Reserve = ({ setOpen, hotelId }) => {
   useEffect(() => {
     const fetchHotelData = async () => {
       try {
-        const response = await axios.get(`/hotels/${hotelId}`);
+        const response = await axiosInstance.get(`/hotels/${hotelId}`);
         const unavailableDates = response.data.unavailableDates.map(
           (entry) => entry.date
         );
@@ -68,7 +68,7 @@ const Reserve = ({ setOpen, hotelId }) => {
 
   const addUnavailableDates = async () => {
     try {
-      await axios.put(`/hotels/${hotelId}/availability`, {
+      await axiosInstance.put(`/hotels/${hotelId}/availability`, {
         dates: alldates,
         userId: user._id,
       });
@@ -93,7 +93,7 @@ const Reserve = ({ setOpen, hotelId }) => {
     try {
       await Promise.all(
         selectedRooms.map((roomId) => {
-          const res = axios.put(`/rooms/${roomId}/availability`, {
+          const res = axiosInstance.put(`/rooms/${roomId}/availability`, {
             dates: alldates,
             userId: user._id,
           });

@@ -7,7 +7,7 @@ import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
 import { useEffect, useState, useRef } from "react";
 import { SearchContext } from "../../context/SearchContext";
-import axios from "axios";
+import axiosInstance from "../../config/axios-config";
 
 const UserHotels = () => {
   const [isViewRoomsClicked, setIsViewRoomsClicked] = useState(false);
@@ -47,14 +47,14 @@ const UserHotels = () => {
 
   const handleDelete = async (id) => {
     try {
-      const hotelResponse = await axios.get(`/hotels/${id}`);
+      const hotelResponse = await axiosInstance.get(`/hotels/${id}`);
       const hotel = hotelResponse.data;
       if (hotel.rooms.length > 0) {
         for (const roomId of hotel.rooms) {
-          await axios.delete(`/hotels/id/rooms/${roomId}`);
+          await axiosInstance.delete(`/hotels/id/rooms/${roomId}`);
         }
       }
-      await axios.delete(`/hotels/${id}`);
+      await axiosInstance.delete(`/hotels/${id}`);
       window.location.reload();
     } catch (err) {
       console.error("Error deleting hotel:", err);
@@ -67,7 +67,7 @@ const UserHotels = () => {
 
   const handleViewRoom = async (id) => {
     try {
-      const response = await axios.get(`/hotels/${id}/roomData`);
+      const response = await axiosInstance.get(`/hotels/${id}/roomData`);
       setDisplayedColumn(response.data.columns.concat(editDeleteRoom));
       setDisplayedRows(response.data.rows);
 
@@ -78,7 +78,9 @@ const UserHotels = () => {
 
   const handleDeleteRoom = async (id) => {
     try {
-      await axios.delete(`/hotels/${selectedHotelIDRef.current}/rooms/${id}`);
+      await axiosInstance.delete(
+        `/hotels/${selectedHotelIDRef.current}/rooms/${id}`
+      );
       await handleViewRoom(selectedHotelIDRef.current);
     } catch (err) {}
   };
@@ -189,7 +191,7 @@ const UserHotels = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get("/hotels/hotelData");
+      const response = await axiosInstance.get("/hotels/hotelData");
       setColumn(response.data.column);
       setRows(response.data.row);
       setPhoto(response.data.photo);
