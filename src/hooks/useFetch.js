@@ -10,6 +10,11 @@ const useFetch = (url) => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        const cookieValue = document.cookie.match(
+          "(^|;)\\s*" + "token" + "\\s*=\\s*([^;]+)"
+        );
+        const token = cookieValue ? cookieValue.pop() : "";
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         const res = await axios.get(`http://localhost:8800/api${url}`);
         setData(res.data);
       } catch (err) {
