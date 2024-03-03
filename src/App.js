@@ -7,6 +7,7 @@ import Register from "./pages/register/Register";
 import Add from "./pages/add/Add";
 import UserHotels from "./pages/userHotels/UserHotels";
 import AddRooms from "./pages/addRooms/AddRooms";
+import Users from "./pages/users/Users";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/edit/:id" element={<Add />} />
         <Route path="/list" element={<UserHotels />} />
         <Route path="/addRooms/:id" element={<AddRooms />} />
+        <Route path="/users" element={<Users />} />
       </Routes>
     </BrowserRouter>
   );

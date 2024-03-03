@@ -90,12 +90,8 @@ const Hotel = () => {
         setRoomTitle([]);
         for (const room of data.rooms) {
           const response = await axiosInstance.get(`/rooms/${room}`);
-          console.log(response.data);
           for (const unavailableRoom of response.data.roomNumbers) {
-            console.log(unavailableRoom);
             if (unavailableRoom.unavailableDates.length > 0) {
-              console.log(unavailableRoom.unavailableDates);
-              console.log(unavailableRoom.number);
               for (const unavailableDate of unavailableRoom.unavailableDates) {
                 const getUser = await axiosInstance.get(
                   `/users/${unavailableDate.userId}`

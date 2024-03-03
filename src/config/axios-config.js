@@ -7,18 +7,26 @@ axios.defaults.baseURL = API_URL;
 const axiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
-    Accept: "application/json",
     "Content-Type": "application/json",
   },
 });
 
-axiosInstance.interceptors.request.use(async (cfg) => {
-  const cookieValue = document.cookie.match(
-    "(^|;)\\s*" + "token" + "\\s*=\\s*([^;]+)"
-  );
-  if (!cookieValue) return cfg;
-  const token = cookieValue.pop();
-  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-});
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const cookieValue = document.cookie.match(
+      "(^|;)\\s*" + "token" + "\\s*=\\s*([^;]+)"
+    );
+    const token = cookieValue ? cookieValue.pop() : "";
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 export default axiosInstance;

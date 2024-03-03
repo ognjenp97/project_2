@@ -91,3 +91,10 @@
   height: 5px;
   background-color: #148271;
 }
+
+.usersHotelsBottom {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+}

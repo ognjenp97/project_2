@@ -31,6 +31,11 @@ const Navbar = () => {
     handleCloseMenu();
     navigate("/list");
   };
+
+  const listUsers = () => {
+    handleCloseMenu();
+    navigate("/users");
+  };
   const { dispatch } = useContext(AuthContext);
 
   const logoutUser = () => {
@@ -71,6 +76,7 @@ const Navbar = () => {
               <div className="menuItem">
                 <MenuItem onClick={addHotel}>Add new real estate</MenuItem>
                 <MenuItem onClick={listHotel}>Your real estate list</MenuItem>
+                <MenuItem onClick={listUsers}>Users list</MenuItem>
                 <MenuItem onClick={logoutUser}>Log out</MenuItem>
               </div>
             </Menu>

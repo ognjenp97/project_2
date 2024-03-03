@@ -6,6 +6,7 @@ import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import axios from "axios";
 
 const NewHotel = () => {
   const [files, setFiles] = useState([]);
@@ -136,7 +137,7 @@ const NewHotel = () => {
         const formData = new FormData();
         formData.append("image", image);
 
-        const response = await axiosInstance.post(
+        const response = await axios.post(
           "https://api.imgbb.com/1/upload?key=" + apiKey,
           formData
         );

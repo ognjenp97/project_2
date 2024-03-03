@@ -59,7 +59,7 @@ td select {
   margin-top: 10px;
 }
 
-.addButton:disabled {
+.addRoomsButton:disabled {
   background-color: #148471;
   cursor: not-allowed;
 }

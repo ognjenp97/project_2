@@ -10,7 +10,7 @@ const useFetch = (url) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await axiosInstance.get(`http://localhost:8800/api${url}`);
+        const res = await axiosInstance.get(`${url}`);
         setData(res.data);
       } catch (err) {
         setError(err);
@@ -23,7 +23,7 @@ const useFetch = (url) => {
   const reFetch = async () => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get(`http://localhost:8800/api${url}`);
+      const res = await axiosInstance.get(`${url}`);
       setData(res.data);
     } catch (err) {
       setError(err);

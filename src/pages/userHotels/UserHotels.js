@@ -12,6 +12,7 @@ import axiosInstance from "../../config/axios-config";
 const UserHotels = () => {
   const [isViewRoomsClicked, setIsViewRoomsClicked] = useState(false);
   const [selectedHotelID, setSelectedHotelID] = useState([]);
+  const [isEmpty, setIsEmpty] = useState(true);
 
   const [displayedColumn, setDisplayedColumn] = useState();
   const [displayedRows, setDisplayedRows] = useState();
@@ -44,6 +45,12 @@ const UserHotels = () => {
       payload: { dates, options },
     });
   };
+
+  useEffect(() => {
+    setIsEmpty(
+      !columns || !rows || (columns.length === 0 && rows.length === 0)
+    );
+  }, [columns, rows]);
 
   const handleDelete = async (id) => {
     try {
@@ -276,8 +283,10 @@ const UserHotels = () => {
       <br />
       <br />
       <br />
-      <div className="line"></div>
-      <Footer />
+      <div className={isEmpty ? "usersHotelsBottom" : ""}>
+        <div className="line"></div>
+        <Footer />
+      </div>
     </div>
   );
 };
