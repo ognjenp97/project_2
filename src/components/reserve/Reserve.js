@@ -4,21 +4,26 @@ import "./reserve.css";
 import useFetch from "../../hooks/useFetch";
 import { useContext, useState, useEffect } from "react";
 import { SearchContext } from "../../context/SearchContext";
-import axios from "axios";
+import axiosInstance from "../../config/axios-config";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 const Reserve = ({ setOpen, hotelId }) => {
   const [selectedRooms, setSelectedRooms] = useState([]);
-  const { data, loading, error } = useFetch(`/hotels/room/${hotelId}`);
+  const { data, loading, error } = useFetch(`/hotels/${hotelId}/rooms`);
   const { dates } = useContext(SearchContext);
   const navigate = useNavigate();
   const [hotelUnavailableDates, setHotelUnavailableDates] = useState([]);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchHotelData = async () => {
       try {
-        const response = await axios.get(`/hotels/find/${hotelId}`);
-        setHotelUnavailableDates(response.data.unavailableDates || []);
+        const response = await axiosInstance.get(`/hotels/${hotelId}`);
+        const unavailableDates = response.data.unavailableDates.map(
+          (entry) => entry.date
+        );
+        setHotelUnavailableDates(unavailableDates || []);
       } catch (error) {
         console.error("Error fetching hotel data:", error);
       }
@@ -45,7 +50,17 @@ const Reserve = ({ setOpen, hotelId }) => {
   const alldates = getDatesInRange(dates[0].startDate, dates[0].endDate);
 
   const isAvailable = (roomNumber) => {
-    const isFound = roomNumber.unavailableDates.some((date) =>
+    if (
+      !roomNumber.unavailableDates ||
+      !Array.isArray(roomNumber.unavailableDates)
+    ) {
+      return true;
+    }
+    const dates = roomNumber.unavailableDates.flatMap(({ date }) => date);
+    if (dates.length === 0) {
+      return true;
+    }
+    const isFound = dates.some((date) =>
       alldates.includes(new Date(date).getTime())
     );
     return !isFound;
@@ -53,8 +68,9 @@ const Reserve = ({ setOpen, hotelId }) => {
 
   const addUnavailableDates = async () => {
     try {
-      await axios.put(`/hotels/availability/${hotelId}`, {
+      await axiosInstance.put(`/hotels/${hotelId}/availability`, {
         dates: alldates,
+        userId: user._id,
       });
       setOpen(false);
       navigate("/");
@@ -77,8 +93,9 @@ const Reserve = ({ setOpen, hotelId }) => {
     try {
       await Promise.all(
         selectedRooms.map((roomId) => {
-          const res = axios.put(`/rooms/availability/${roomId}`, {
+          const res = axiosInstance.put(`/rooms/${roomId}/availability`, {
             dates: alldates,
+            userId: user._id,
           });
           return res.data;
         })
@@ -115,11 +132,11 @@ const Reserve = ({ setOpen, hotelId }) => {
                   <div className="rMax">
                     Max people: <b>{item.maxPeople}</b>
                   </div>
-                  <div className="rPrice">{item.price}</div>
+                  <div className="rPrice">{item.price}€</div>
                 </div>
                 <div className="rSelectRooms">
                   {item.roomNumbers.map((roomNumber) => (
-                    <div className="room">
+                    <div className="room" key={roomNumber._id}>
                       <label>{roomNumber.number}</label>
                       <input
                         type="checkbox"

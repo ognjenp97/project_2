@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "../../config/axios-config";
 import { useContext, useState } from "react";
 import "./login.css";
 import { AuthContext } from "../../context/AuthContext";
@@ -22,7 +22,11 @@ const Login = () => {
     e.preventDefault();
     dispatch({ type: "LOGIN_START" });
     try {
-      const res = await axios.post("/auth/login", credentials);
+      const res = await axiosInstance.post("/auth/login", credentials);
+      const token = res.data.token;
+      document.cookie = `token=${token}; expires=${new Date(
+        Date.now() + 7 * 24 * 60 * 60 * 1000
+      ).toUTCString()}; path=/;`;
       dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
       navigate("/");
     } catch (err) {

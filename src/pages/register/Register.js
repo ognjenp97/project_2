@@ -1,5 +1,5 @@
 import "./register.css";
-import axios from "axios";
+import axiosInstance from "../../config/axios-config";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
@@ -11,8 +11,6 @@ const Register = () => {
     confirmPassword: undefined,
     email: undefined,
   });
-
-  const { password, confirmPassword } = credentials;
 
   const { loading, error, dispatch } = useContext(AuthContext);
 
@@ -36,8 +34,8 @@ const Register = () => {
 
   const handleRegister = async () => {
     try {
-      await axios.post("/auth/register", credentials);
-      const res = await axios.post("/auth/login", credentials);
+      await axiosInstance.post("/auth/register", credentials);
+      const res = await axiosInstance.post("/auth/login", credentials);
       dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
       navigate("/");
     } catch (error) {

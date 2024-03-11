@@ -67,7 +67,7 @@ const Header = ({ type }) => {
             <h1 className="headerTitle">
               A lifetime of discounts? It's Genius.
             </h1>
-            <p className="headerDesc">
+            <div className="headerDesc">
               Save at least 10% on stays worldwide, from relaxing retreats to
               off-grid adventures
               {!user && (
@@ -80,7 +80,7 @@ const Header = ({ type }) => {
                   </button>
                 </div>
               )}
-            </p>
+            </div>
             <div className="headerSearch">
               <div className="headerSearchItem">
                 <FontAwesomeIcon icon={faBed} className="headerIcon" />
