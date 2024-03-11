@@ -3,7 +3,7 @@ import "./users.css";
 import { DataGrid } from "@mui/x-data-grid";
 import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/footer/Footer";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import axiosInstance from "../../config/axios-config";
 
 const UserHotels = () => {

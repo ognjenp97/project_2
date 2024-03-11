@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 import { SearchContext } from "../../context/SearchContext";
 
 const Footer = () => {
-  const [destination, setDestination] = useState("");
+  const [setDestination] = useState("");
   const [dates] = useState([
     {
       startDate: new Date(),

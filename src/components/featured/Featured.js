@@ -8,11 +8,11 @@ import { SearchContext } from "../../context/SearchContext";
 import { useNavigate } from "react-router-dom";
 
 const Featured = () => {
-  const { data, loading, error } = useFetch(
+  const { data, loading } = useFetch(
     "/hotels/countByCity?cities=Banja Luka,Belgrade,Vienna"
   );
 
-  const [destination, setDestination] = useState("");
+  const [setDestination] = useState("");
 
   const [dates] = useState([
     {

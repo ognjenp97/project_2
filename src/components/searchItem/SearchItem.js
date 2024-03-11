@@ -10,6 +10,7 @@ const SearchItem = ({ item }) => {
   return (
     <div className="searchItem">
       <img
+        alt=""
         src={item.photos[0]}
         className="siImg"
         onClick={() => handleClick(item._id)}

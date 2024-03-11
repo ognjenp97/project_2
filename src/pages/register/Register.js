@@ -12,7 +12,7 @@ const Register = () => {
     email: undefined,
   });
 
-  const { loading, error, dispatch } = useContext(AuthContext);
+  const { loading, error } = useContext(AuthContext);
 
   const navigate = useNavigate();
 

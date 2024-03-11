@@ -29,7 +29,7 @@ const Hotel = () => {
   };
   const [openModal, setOpenModal] = useState(false);
   const [otherButton, setOtherButton] = useState(false);
-  const { data, loading, error } = useFetch(`/hotels/${id}`);
+  const { data, loading } = useFetch(`/hotels/${id}`);
   const { user } = useContext(AuthContext);
   const [showUnavailableDates, setShowUnavailableDates] = useState(false);
   const navigate = useNavigate();
@@ -146,7 +146,7 @@ const Hotel = () => {
             onClick={() => handleMove("l")}
           />
           <div className="sliderWrapper">
-            <img src={data.photos[slideNumber]} className="sliderImg" />
+            <img alt="" src={data.photos[slideNumber]} className="sliderImg" />
           </div>
           <FontAwesomeIcon
             icon={faCircleArrowRight}
@@ -189,6 +189,7 @@ const Hotel = () => {
               {data.photos?.map((photo, i) => (
                 <div className="hotelImgWrapper" key={i}>
                   <img
+                    alt=""
                     onClick={() => handleOpen(i)}
                     src={photo}
                     className="hotelImg"

@@ -22,7 +22,7 @@ const UserHotels = () => {
   const [rows, setRows] = useState();
   const [photo, setPhoto] = useState([]);
 
-  const [dates, setDate] = useState([
+  const [dates] = useState([
     {
       today: new Date(),
       startDate: new Date(),

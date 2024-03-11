@@ -5,7 +5,7 @@ import { useContext, useState } from "react";
 import { SearchContext } from "../../context/SearchContext";
 
 const FeaturedBooking = () => {
-  const { data, loading, error } = useFetch("/hotels?featured=true");
+  const { data, loading } = useFetch("/hotels?featured=true");
   const random = Math.ceil(Math.random() * (data.length - 3));
   const slicedNumbers = data.slice(random - 1, random + 3);
 
@@ -15,7 +15,7 @@ const FeaturedBooking = () => {
     children: 0,
     room: 1,
   });
-  const [destination, setDestination] = useState();
+  const [setDestination] = useState();
   const enddate = new Date();
   enddate.setDate(enddate.getDate() + 1);
 

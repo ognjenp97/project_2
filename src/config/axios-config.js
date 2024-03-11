@@ -13,9 +13,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const cookieValue = document.cookie.match(
-      "(^|;)\\s*" + "token" + "\\s*=\\s*([^;]+)"
-    );
+    const cookieValue = document.cookie.match("(^|;)\\s*token\\s*=\\s*([^;]+)");
     const token = cookieValue ? cookieValue.pop() : "";
 
     if (token) {

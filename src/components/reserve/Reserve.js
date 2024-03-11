@@ -10,7 +10,7 @@ import { AuthContext } from "../../context/AuthContext";
 
 const Reserve = ({ setOpen, hotelId }) => {
   const [selectedRooms, setSelectedRooms] = useState([]);
-  const { data, loading, error } = useFetch(`/hotels/${hotelId}/rooms`);
+  const { data } = useFetch(`/hotels/${hotelId}/rooms`);
   const { dates } = useContext(SearchContext);
   const navigate = useNavigate();
   const [hotelUnavailableDates, setHotelUnavailableDates] = useState([]);

@@ -23,18 +23,6 @@ const NewHotel = () => {
     setInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
-  function extractNumbers(e) {
-    const inputString = e.target.value;
-    const numberRegex = /[-+]?\d*\.?\d+/g;
-    const numbersArray = inputString.match(numberRegex);
-    const numbers = numbersArray.map(Number);
-    const niz = numbers.map((number) => ({ number: number }));
-    setInfo((prevInfo) => ({
-      ...prevInfo,
-      roomNumbers: niz,
-    }));
-  }
-
   const checkFormValidity = () => {
     const isRoomInfoValid =
       info.title &&

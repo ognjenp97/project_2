@@ -27,7 +27,7 @@ const responsive = {
 };
 
 const PropertyList = () => {
-  const { data, loading, error } = useFetch("/hotels/countByType");
+  const { data, loading } = useFetch("/hotels/countByType");
 
   const [dates] = useState([
     {
