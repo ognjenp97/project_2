@@ -50,7 +50,7 @@ const Hotel = () => {
 
   useEffect(() => {
     if (user && data && data.userId && data.userId.length > 0) {
-      setOtherButton(user._id === data.userId[0]);
+      setOtherButton(user._id === data.userId);
     }
   }, [user, data]);
 

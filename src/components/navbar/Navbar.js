@@ -42,6 +42,7 @@ const Navbar = () => {
     handleCloseMenu();
     try {
       dispatch({ type: "LOGOUT" });
+      document.cookie = "token=; path=/;";
       navigate("/");
     } catch (err) {
       dispatch({ type: "LOGIN_FAILURE", payload: err.response.data });

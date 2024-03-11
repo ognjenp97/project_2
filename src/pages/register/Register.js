@@ -35,12 +35,8 @@ const Register = () => {
   const handleRegister = async () => {
     try {
       await axiosInstance.post("/auth/register", credentials);
-      const res = await axiosInstance.post("/auth/login", credentials);
-      dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
-      navigate("/");
-    } catch (error) {
-      dispatch({ type: "LOGIN_FAILURE", payload: error.response.data });
-    }
+      navigate("/login");
+    } catch (error) {}
   };
 
   return (
