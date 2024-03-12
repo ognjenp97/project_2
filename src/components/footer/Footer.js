@@ -4,7 +4,6 @@ import { useContext, useState } from "react";
 import { SearchContext } from "../../context/SearchContext";
 
 const Footer = () => {
-  const [setDestination] = useState("");
   const [dates] = useState([
     {
       startDate: new Date(),
@@ -23,7 +22,6 @@ const Footer = () => {
   const { dispatch } = useContext(SearchContext);
 
   const handleSearch = (clickedDestination) => {
-    setDestination(clickedDestination);
     dispatch({
       type: "NEW_SEARCH",
       payload: { destination: clickedDestination, dates, options },

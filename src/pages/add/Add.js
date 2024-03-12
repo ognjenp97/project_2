@@ -99,28 +99,28 @@ const NewHotel = () => {
     setInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
-  const checkFormValidity = () => {
-    const isHotelInfoValid =
-      credentials.name &&
-      credentials.type &&
-      credentials.city &&
-      credentials.address &&
-      credentials.distance &&
-      credentials.cheapestPrice &&
-      credentials.title &&
-      credentials.desc;
-
-    const isRoomInfoValid =
-      info.title &&
-      info.price &&
-      info.maxPeople &&
-      info.desc &&
-      info.roomNumbers;
-
-    setIsFormValid(isHotelInfoValid && (propertyType || isRoomInfoValid));
-  };
-
   useEffect(() => {
+    const checkFormValidity = () => {
+      const isHotelInfoValid =
+        credentials.name &&
+        credentials.type &&
+        credentials.city &&
+        credentials.address &&
+        credentials.distance &&
+        credentials.cheapestPrice &&
+        credentials.title &&
+        credentials.desc;
+
+      const isRoomInfoValid =
+        info.title &&
+        info.price &&
+        info.maxPeople &&
+        info.desc &&
+        info.roomNumbers;
+
+      setIsFormValid(isHotelInfoValid && (propertyType || isRoomInfoValid));
+    };
+
     checkFormValidity();
   }, [credentials, info, propertyType]);
 

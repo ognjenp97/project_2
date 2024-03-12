@@ -12,8 +12,6 @@ const Featured = () => {
     "/hotels/countByCity?cities=Banja Luka,Belgrade,Vienna"
   );
 
-  const [setDestination] = useState("");
-
   const [dates] = useState([
     {
       startDate: new Date(),
@@ -33,7 +31,6 @@ const Featured = () => {
   const { dispatch } = useContext(SearchContext);
 
   const handleSearch = (clickedDestination) => {
-    setDestination(clickedDestination);
     dispatch({
       type: "NEW_SEARCH",
       payload: { destination: clickedDestination, dates, options },
