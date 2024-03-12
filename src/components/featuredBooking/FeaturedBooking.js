@@ -15,7 +15,6 @@ const FeaturedBooking = () => {
     children: 0,
     room: 1,
   });
-  const [setDestination] = useState();
   const enddate = new Date();
   enddate.setDate(enddate.getDate() + 1);
 
@@ -29,7 +28,6 @@ const FeaturedBooking = () => {
   const { dispatch } = useContext(SearchContext);
 
   const handleClick = (ClickId, clickedDestination) => {
-    setDestination(clickedDestination);
     dispatch({
       type: "NEW_SEARCH",
       payload: { destination: clickedDestination, dates, options },

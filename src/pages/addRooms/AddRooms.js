@@ -23,18 +23,17 @@ const NewHotel = () => {
     setInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
-  const checkFormValidity = () => {
-    const isRoomInfoValid =
-      info.title &&
-      info.price &&
-      info.maxPeople &&
-      info.desc &&
-      info.roomNumbers;
-    setIsFormValid(isRoomInfoValid);
-  };
-
   useEffect(() => {
-    checkFormValidity();
+    const isRoomInfoValid = () => {
+      return (
+        info.title &&
+        info.price &&
+        info.maxPeople &&
+        info.desc &&
+        info.roomNumbers
+      );
+    };
+    setIsFormValid(isRoomInfoValid());
   }, [info]);
 
   useEffect(() => {
